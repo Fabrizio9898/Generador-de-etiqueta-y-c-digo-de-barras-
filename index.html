@@ -230,6 +230,9 @@
   max-height: 25mm !important;
   height: 25mm;
 }
+.label-body .barcode-item-block:first-child {
+  margin-top: 8mm; /* Espacio desde arriba para evitar el logo */
+}
 
 /* Cuando hay 2 códigos de barras, los hacemos más chicos */
 .label-body .barcode-item-block:first-child:nth-last-child(2) svg,
@@ -381,6 +384,20 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
           z-index: 9999;
           page-break-after: always;
         }
+
+          .header-text {
+    white-space: nowrap !important; /* No permite saltos de línea */
+    font-size: 8pt !important; /* Un poco más chico para que quepa */
+    overflow: hidden !important; /* Oculta lo que se salga */
+  }
+
+  .header-blue-bar {
+    padding-left: 20mm !important;
+    padding-right: 2mm !important; /* Agrega padding derecho */
+    overflow: hidden !important;
+  }
+
+
 
         @page {
           size: 70mm 70mm;
