@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de Etiquetas Industriales UI/UX</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- ESTÉTICA GENERAL (UI/UX) --- */
+      :root {
+        --mopar-blue: #004a99; /* Azul corporativo intenso */
+        --bg-ui: #f4f7f6; /* Fondo gris claro limpio */
+        --text-dark: #2c3e50;
+      }
+
+      body {
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-ui);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        /* Por defecto es ROW (lado a lado) para PC */
+        flex-direction: row;
+        overflow: hidden; /* En PC no scroleamos */
+      }
+
+      /* --- SECCIÓN IZQUIERDA: PANEL DE CONTROL --- */
+      .ui-panel {
+        width: 350px; /* Ancho fijo en PC */
+        background: white;
+        padding: 30px;
+        box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
+        /* Aseguramos que el padding no sume al ancho total */
+        box-sizing: border-box;
+      }
+
+      .ui-title {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .input-group {
+        margin-bottom: 25px;
+      }
+      .input-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        box-sizing: border-box;
+      }
+      .input-field:focus {
+        border-color: var(--mopar-blue);
+        outline: none;
+      }
+
+      /* Previsualización en vivo dentro del panel */
+      .live-preview-box {
+        min-height: 80px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border: 1px dashed #ccc;
+      }
+      .live-preview-box svg {
+        width: 100%;
+        height: auto;
+        max-height: 70px;
+      }
+      .placeholder-text {
+        color: #aaa;
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+
+      .btn-primary {
+        width: 100%;
+        padding: 12px;
+        background: var(--mopar-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+      .btn-primary:hover {
+        background-color: #003d7a;
+      }
+      .btn-primary:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .btn-print-floater {
+        margin-top: auto; /* Empuja el botón al final */
+        background: #27ae60;
+      }
+      .btn-print-floater:hover {
+        background: #219653;
+      }
+
+      /* --- SECCIÓN CENTRAL: ÁREA DE TRABAJO --- */
+      .workspace-area {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e9ecef;
+        padding: 20px;
+      }
+
+      /* --- LA ETIQUETA (El protagonista) --- */
+      #label-container {
+        width: 70mm;
+        height: 70mm;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+
+      .label-header {
+        background-color: var(--mopar-blue);
+        color: white;
+        text-align: center;
+        font-weight: 900;
+        font-size: 10pt;
+        padding: 3mm 1mm;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .header-text {
+        font-weight: 900;
+        font-size: 9pt; /* Ajustado para que entre bien */
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: center;
+        line-height: 1;
+      }
+
+      .label-body {
+        flex: 1;
+        padding: 4mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4mm;
+      }
+
+      .barcode-item-block {
+        position: relative;
+        width: 100%;
+        text-align: center;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+      }
+      .barcode-item-block svg {
+        width: 95%;
+        height: auto;
+        max-height: 25mm;
+      }
+
+      .barcode-item-block:hover {
+        border: 1px dashed var(--mopar-blue);
+        background-color: rgba(0, 74, 153, 0.05);
+      }
+
+      .hover-actions {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        background: rgba(255, 255, 255, 0.8);
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+      .barcode-item-block:hover .hover-actions {
+        display: flex;
+      }
+
+      .action-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: transform 0.2s;
+      }
+      .btn-delete {
+        background: #e74c3c;
+      }
+      .btn-edit {
+        background: var(--mopar-blue);
+      }
+      .action-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .label-footer {
+        padding: 1mm 2mm;
+        border-top: 0.5px solid #000000;
+        font-size: 4pt;
+        color: #004a99;
+        line-height: 1.1;
+        margin-bottom: 1mm;
+      }
+
+      .footer-code {
+        font-weight: bold;
+        font-size: 4.5pt;
+        margin-bottom: 1px;
+      }
+      .tm-symbol {
+        font-size: 0.6em;
+        vertical-align: super;
+        margin-left: 1px;
+      }
+      /* --- 📱 RESPONSIVE PARA CELULARES --- */
+      /* Si la pantalla mide menos de 768px (Tablets y Celus) */
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column; /* Apila uno arriba del otro */
+          height: auto; /* Deja que crezca hacia abajo */
+          overflow-y: auto; /* Habilita el scroll vertical */
+        }
+
+        .ui-panel {
+          width: 100%; /* Ancho completo */
+          padding: 20px; /* Un poco menos de padding */
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra hacia abajo */
+        }
+
+        .workspace-area {
+          padding: 40px 10px; /* Dale aire arriba y abajo */
+          min-height: 400px; /* Asegura espacio para ver la etiqueta */
+        }
+
+        /* El botón de imprimir ya no necesita empujar al fondo en celular */
+        .btn-print-floater {
+          margin-top: 20px;
+        }
+      }
+
+      /* --- REGLAS DE IMPRESIÓN (EL ARREGLO FINAL) --- */
+      @media print {
+        .ui-panel {
+          display: none !important;
+        }
+
+        .workspace-area {
+          display: block !important;
+          background: white !important;
+          padding: 0 !important;
+          height: auto !important;
+          margin: 0 !important;
+        }
+
+        body {
+          background: white;
+          margin: 0;
+        }
+
+        #label-container {
+          box-shadow: none !important;
+box-sizing: border-box !important; /* Mantiene el borde adentro */
+                width: 68mm !important;  /* Un pelín más chico para que no se corte */
+                height: 68mm !important; /* Un pelín más chico para que no se corte */
+                border: 1px dashed #333 !important;          position: fixed !important;
+          top: 0;
+          left: 0;
+          margin: 0;
+          z-index: 9999;
+          page-break-after: always;
+        }
+
+        @page {
+          size: 70mm 70mm;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui-panel">
+      <div class="ui-title">
+        <i class="ri-settings-3-line"></i> Configurar Etiqueta
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Ingrese Código / Número</label>
+        <input
+          type="text"
+          id="codeInput"
+          class="input-field"
+          placeholder="Ej: PART-123456"
+          oninput="livePreview()"
+          autocomplete="off"
+        />
+      </div>
+
+      <label class="input-label">Previsualización:</label>
+      <div class="live-preview-box" id="previewContainer">
+        <span class="placeholder-text">Escriba para previsualizar...</span>
+      </div>
+
+      <button id="addBtn" class="btn-primary" onclick="addToLabel()" disabled>
+        <i class="ri-add-circle-line"></i> Agregar a Etiqueta (OK)
+      </button>
+
+      <button class="btn-primary btn-print-floater" onclick="window.print()">
+        <i class="ri-printer-line"></i> IMPRIMIR ETIQUETA
+      </button>
+    </div>
+
+    <div class="workspace-area">
+      <div id="label-container">
+        <div class="label-header">
+          <div class="header-text">
+            GENUINE PARTS & ACCESSORIES<sup class="tm-symbol">TM</sup>
+          </div>
+        </div>
+        <div class="label-body" id="labelBodyContent"></div>
+        <div class="label-footer">
+          <div class="footer-code">L-6060</div>
+          <div>
+            Contents conform to US Federal Motor Vehicle Safety Standards, if
+            any are applicable.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const codeInput = document.getElementById("codeInput");
+      const previewContainer = document.getElementById("previewContainer");
+      const addBtn = document.getElementById("addBtn");
+      const labelBodyContent = document.getElementById("labelBodyContent");
+
+      function livePreview() {
+        const text = codeInput.value.toUpperCase();
+        if (text.length === 0) {
+          previewContainer.innerHTML =
+            '<span class="placeholder-text">Escriba para previsualizar...</span>';
+          addBtn.disabled = true;
+          return;
+        }
+        addBtn.disabled = false;
+        previewContainer.innerHTML = '<svg id="tempPreviewSvg"></svg>';
+        try {
+          JsBarcode("#tempPreviewSvg", text, {
+            format: "CODE128",
+            width: 1.7,
+            height: 40,
+            displayValue: true,
+            fontSize: 10,
+            margin: 0,
+          });
+        } catch (e) {
+          previewContainer.innerHTML =
+            '<span style="color:red; font-size:0.8rem">Caracteres no válidos</span>';
+          addBtn.disabled = true;
+        }
+      }
+
+      function addToLabel() {
+        const text = codeInput.value.toUpperCase();
+        if (text.length === 0) return;
+
+        const blockDiv = document.createElement("div");
+        blockDiv.className = "barcode-item-block";
+        const svgElement = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg",
+        );
+
+        JsBarcode(svgElement, text, {
+          format: "CODE128",
+          width: 2,
+          height: 50,
+          displayValue: true,
+          fontSize: 14,
+          fontOptions: "bold",
+          margin: 0,
+        });
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "hover-actions";
+        actionsDiv.innerHTML = `
+                <button class="action-btn btn-edit" onclick="editBlock(this, '${text}')" title="Editar"><i class="ri-pencil-line"></i></button>
+                <button class="action-btn btn-delete" onclick="deleteBlock(this)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+            `;
+
+        blockDiv.appendChild(svgElement);
+        blockDiv.appendChild(actionsDiv);
+        labelBodyContent.appendChild(blockDiv);
+
+        codeInput.value = "";
+        livePreview();
+        codeInput.focus();
+      }
+
+      function deleteBlock(buttonElement) {
+        const blockToDelete = buttonElement.parentElement.parentElement;
+        blockToDelete.remove();
+      }
+
+      function editBlock(buttonElement, textValue) {
+        codeInput.value = textValue;
+        livePreview();
+        codeInput.focus();
+        deleteBlock(buttonElement);
+      }
+
+      codeInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter" && !addBtn.disabled) {
+          addToLabel();
+        }
+      });
+    </script>
+  </body>
+</html>
