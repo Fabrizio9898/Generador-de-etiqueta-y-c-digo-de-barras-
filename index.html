@@ -152,6 +152,16 @@
         box-sizing: border-box;
       }
 
+       .mopar-header-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        position: relative;
+      }
+
+       .stripe-white { height: 1.5mm; background: white; width: 100%; }
+      .stripe-blue { height: 1.5mm; background: var(--mopar-blue); width: 100%; }
+
       .label-header {
         background-color: var(--mopar-blue);
         color: white;
@@ -163,13 +173,24 @@
         letter-spacing: 0.5px;
       }
 
-      .header-text {
-        font-weight: 900;
-        font-size: 9pt; /* Ajustado para que entre bien */
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        text-align: center;
-        line-height: 1;
+       .header-blue-bar {
+        background-color: var(--mopar-blue);
+        display: flex;
+        align-items: center;
+        padding-left: 20mm;
+        padding-top: 5px;
+         /* Espacio para el logo que flota */
+      }
+
+      .header-text{
+        color: white;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        font-size: 9pt;
+        text-transform: capitalize; /* Genuine Parts... */
+        margin-left: 1mm;
+        margin-top:5px;
+        padding-bottom: 3px;
       }
 
       .label-body {
@@ -180,7 +201,11 @@
         align-items: center;
         justify-content: center;
         gap: 4mm;
+          max-height: 50mm; /* Altura máxima para dejar espacio al footer */
+  overflow: hidden;
       }
+
+
 
       .barcode-item-block {
         position: relative;
@@ -199,6 +224,24 @@
         border: 1px dashed var(--mopar-blue);
         background-color: rgba(0, 74, 153, 0.05);
       }
+
+      /* Cuando hay 1 código de barras */
+.label-body .barcode-item-block:only-child svg {
+  max-height: 25mm !important;
+  height: 25mm;
+}
+
+/* Cuando hay 2 códigos de barras, los hacemos más chicos */
+.label-body .barcode-item-block:first-child:nth-last-child(2) svg,
+.label-body .barcode-item-block:first-child:nth-last-child(2) ~ .barcode-item-block svg {
+  max-height: 18mm !important;
+  height: 18mm;
+}
+
+/* Reducir el GAP cuando hay 2 códigos */
+.label-body:has(.barcode-item-block:nth-child(2)) {
+  gap: 2mm;
+}
 
       .hover-actions {
         position: absolute;
@@ -241,11 +284,11 @@
 
       .label-footer {
         padding: 1mm 2mm;
-        border-top: 0.5px solid #000000;
         font-size: 4pt;
         color: #004a99;
         line-height: 1.1;
         margin-bottom: 1mm;
+        
       }
 
       .footer-code {
@@ -258,6 +301,29 @@
         vertical-align: super;
         margin-left: 1px;
       }
+
+     .mopar-logo-div {
+            position: absolute;
+            left: 3mm;    
+            top: 2mm;     
+            width: 14mm;  
+            height: 14mm; 
+            background: white; 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        /* LA IMAGEN ADENTRO DEL DIV */
+        .logo-img-file {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+        }
+
+      
       /* --- 📱 RESPONSIVE PARA CELULARES --- */
       /* Si la pantalla mide menos de 768px (Tablets y Celus) */
       @media (max-width: 768px) {
@@ -357,14 +423,21 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
 
     <div class="workspace-area">
       <div id="label-container">
-        <div class="label-header">
+        <div class="mopar-header-wrapper">
+        <div class="mopar-logo-div">
+                    <img src="logo-mopar.png" alt="Logo Mopar" class="logo-img-file">
+                </div>
+        <div class="header-blue-bar">
           <div class="header-text">
-            GENUINE PARTS & ACCESSORIES<sup class="tm-symbol">TM</sup>
+            Genuine Parts & Accessories™
           </div>
+        </div>
+        <div class="stripe-white"></div>
+            <div class="stripe-blue"></div>
         </div>
         <div class="label-body" id="labelBodyContent"></div>
         <div class="label-footer">
-          <div class="footer-code">L-6060</div>
+          <div class="footer-code">L=6060</div>
           <div>
             Contents conform to US Federal Motor Vehicle Safety Standards, if
             any are applicable.
