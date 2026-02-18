@@ -200,8 +200,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 4mm;
-          max-height: 50mm; /* Altura máxima para dejar espacio al footer */
+        max-height: 50mm; /* Altura máxima para dejar espacio al footer */
   overflow: hidden;
       }
 
@@ -211,14 +210,14 @@
         position: relative;
         width: 100%;
         text-align: center;
-        border: 1px solid transparent;
         transition: all 0.2s;
       }
       .barcode-item-block svg {
-        width: 95%;
-        height: auto;
-        max-height: 25mm;
-      }
+  width: 95%;
+  height: 50px !important;      /* ✅ ALTURA FIJA del contenedor SVG */
+  max-height: 50px !important;  /* ✅ LÍMITE FIJO */
+  min-height: 50px !important;  /* ✅ MÍNIMO FIJO */
+}
 
       .barcode-item-block:hover {
         border: 1px dashed var(--mopar-blue);
@@ -231,7 +230,11 @@
   height: 25mm;
 }
 .label-body .barcode-item-block:first-child {
-  margin-top: 8mm; /* Espacio desde arriba para evitar el logo */
+  margin-top: 3mm; /* Espacio desde arriba para evitar el logo */
+}
+  
+.label-body .barcode-item-block:last-child {
+  margin-top: 3mm; /* Espacio desde abajo para evitar el footer */
 }
 
 /* Cuando hay 2 códigos de barras, los hacemos más chicos */
@@ -325,6 +328,27 @@
             height: 100%;
             object-fit: contain; 
         }
+
+        .text-item-block {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.text-content {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.2;
+}
+
+.text-item-block:hover {
+  border: 1px dashed var(--mopar-blue);
+  background-color: rgba(0, 74, 153, 0.05);
+}
 
       
       /* --- 📱 RESPONSIVE PARA CELULARES --- */
@@ -482,7 +506,7 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
         try {
           JsBarcode("#tempPreviewSvg", text, {
             format: "CODE128",
-            width: 1.7,
+            width: 1,
             height: 40,
             displayValue: true,
             fontSize: 10,
@@ -509,11 +533,12 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
         JsBarcode(svgElement, text, {
           format: "CODE128",
           width: 2,
-          height: 50,
+          height: 40,
           displayValue: true,
-          fontSize: 14,
+          fontSize: 16,
           fontOptions: "bold",
           margin: 0,
+          flat:true
         });
 
         const actionsDiv = document.createElement("div");
@@ -527,6 +552,18 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
         blockDiv.appendChild(actionsDiv);
         labelBodyContent.appendChild(blockDiv);
 
+        if (labelBodyContent.querySelectorAll('.barcode-item-block').length === 1) {
+    const textDiv = document.createElement("div");
+    textDiv.className = "text-item-block";
+    textDiv.innerHTML = `
+      <div class="text-content">Made in Brazil</div>
+      <div class="hover-actions">
+        <button class="action-btn btn-delete" onclick="deleteBlock(this)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+      </div>
+    `;
+    labelBodyContent.appendChild(textDiv);
+  }
+
         codeInput.value = "";
         livePreview();
         codeInput.focus();
@@ -535,6 +572,12 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
       function deleteBlock(buttonElement) {
         const blockToDelete = buttonElement.parentElement.parentElement;
         blockToDelete.remove();
+          const remainingBarcodes = labelBodyContent.querySelectorAll('.barcode-item-block').length;
+  const textBlock = labelBodyContent.querySelector('.text-item-block');
+  
+  if (remainingBarcodes === 0 && textBlock) {
+    textBlock.remove(); // Elimina el texto si no hay códigos
+  }
       }
 
       function editBlock(buttonElement, textValue) {
