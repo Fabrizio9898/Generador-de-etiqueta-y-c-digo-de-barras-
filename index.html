@@ -118,7 +118,13 @@
         overflow: hidden;
         text-overflow: ellipsis; 
       }
-
+.label-body .barcode-item-block:nth-child(3) {
+        flex-grow: 1; /* Esto le dice: "Comete todo el espacio que sobra" */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* Pega el código al fondo (cerca del footer) */
+        padding-bottom: 2mm; /* Un airecito antes del footer */
+      }
       /* Texto extra (Made in Brazil) */
       .text-item-block { position: relative; width: 100%; text-align: center; padding: 0;  }
       .text-content { font-size: 8pt; font-weight: bold; color: #333; text-align: center; }
