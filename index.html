@@ -25,7 +25,8 @@
 
       .btn-primary { width: 100%; padding: 12px; background: var(--mopar-blue); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
       .btn-print-floater { margin-top: auto; background: #27ae60; }
-
+.btn-thermal { background: #d35400; margin-top: auto; }
+      .btn-thermal:hover { background: #e67e22; }
       /* --- ÁREA DE TRABAJO --- */
       .workspace-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; background-color: #e9ecef; padding: 20px; }
 
@@ -191,12 +192,38 @@
            width: 100% !important;
            height: 40px !important; 
         }
+
+        
         
         .barcode-text-label { font-size: 10pt !important; line-height: 1 !important; margin: 0 !important; }
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         
         /* Definimos la hoja física de 60x60 */
         @page { size: 60mm 60mm; margin: 0; }
+      }
+
+      body.thermal-mode .header-blue-bar, 
+      body.thermal-mode .stripe-blue,
+      body.thermal-mode .label-footer {
+          background-color: transparent !important; /* Chau fondo azul */
+          color: transparent !important; /* Chau texto del footer (ya viene impreso) */
+      }
+      
+      body.thermal-mode .mopar-logo-div {
+          opacity: 0 !important; /* Chau logo (ya viene impreso) */
+      }
+
+      body.thermal-mode .header-text,
+      body.thermal-mode .footer-code,
+      body.thermal-mode .footer-line {
+          color: transparent !important;
+          background-color: transparent !important;
+          display: none !important; /* Ocultamos los textos fijos para que no manchen */
+      }
+      
+      /* Pero mantenemos el BODY (Barcodes) visible y negro */
+      body.thermal-mode .label-body {
+          visibility: visible !important;
       }
     </style>
   </head>
@@ -211,6 +238,9 @@
       <div class="live-preview-box" id="previewContainer"><span class="placeholder-text">Escriba para previsualizar...</span></div>
       <button id="addBtn" class="btn-primary" onclick="addToLabel()" disabled><i class="ri-add-circle-line"></i> Agregar a Etiqueta (OK)</button>
       <button class="btn-primary btn-print-floater" onclick="window.print()"><i class="ri-printer-line"></i> IMPRIMIR ETIQUETA</button>
+      <button class="btn-primary btn-thermal" onclick="printThermal()">
+        <i class="ri-fire-line"></i> Impresión Térmica (Datos)
+      </button>
     </div>
 
     <div class="workspace-area">
@@ -235,6 +265,21 @@
       const previewContainer = document.getElementById("previewContainer");
       const addBtn = document.getElementById("addBtn");
       const labelBodyContent = document.getElementById("labelBodyContent");
+
+      function printThermal() {
+        // 1. Agregamos la clase que oculta lo azul
+        document.body.classList.add("thermal-mode");
+        
+        // 2. Esperamos un cachito a que el navegador procese el cambio visual
+        setTimeout(() => {
+            window.print();
+        }, 200);
+      }
+
+      // 3. Cuando se termina de imprimir (o se cancela), volvemos a la normalidad
+      window.onafterprint = function() {
+          document.body.classList.remove("thermal-mode");
+      };
 
       function livePreview() {
         const text = codeInput.value.toUpperCase();
