@@ -152,15 +152,23 @@
         box-sizing: border-box;
       }
 
-       .mopar-header-wrapper {
+      .mopar-header-wrapper {
         display: flex;
         flex-direction: column;
         width: 100%;
         position: relative;
       }
 
-       .stripe-white { height: 1.5mm; background: white; width: 100%; }
-      .stripe-blue { height: 1.5mm; background: var(--mopar-blue); width: 100%; }
+      .stripe-white {
+        height: 1.5mm;
+        background: white;
+        width: 100%;
+      }
+      .stripe-blue {
+        height: 1.5mm;
+        background: var(--mopar-blue);
+        width: 100%;
+      }
 
       .label-header {
         background-color: var(--mopar-blue);
@@ -173,51 +181,48 @@
         letter-spacing: 0.5px;
       }
 
-       .header-blue-bar {
+      .header-blue-bar {
         background-color: var(--mopar-blue);
-        display: flex;
-        align-items: center;
-        padding-left: 20mm;
-        padding-top: 5px;
-         /* Espacio para el logo que flota */
+        padding-left: 16mm;
+        padding-top: 3px;
+        /* Espacio para el logo que flota */
       }
 
-      .header-text{
+      .header-text {
         color: white;
         font-family: Arial, sans-serif;
         font-weight: bold;
         font-size: 9pt;
         text-transform: capitalize; /* Genuine Parts... */
-        margin-left: 1mm;
-        margin-top:5px;
-        padding-bottom: 3px;
+        margin-right: 2px;
+        padding: 5px;
       }
 
       .label-body {
         flex: 1;
-        padding: 4mm;
+        padding: 1mm 2mm; /* ✅ ERA 2mm 2mm 1mm, ahora menos padding */
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         max-height: 50mm; /* Altura máxima para dejar espacio al footer */
-  overflow: hidden;
+        overflow: hidden;
       }
-
-
 
       .barcode-item-block {
         position: relative;
         width: 100%;
         text-align: center;
         transition: all 0.2s;
+        max-height: 50px; /* ✅ ALTURA MÁXIMA DEL BLOQUE COMPLETO */
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .barcode-item-block svg {
-  width: 95%;
-  height: 50px !important;      /* ✅ ALTURA FIJA del contenedor SVG */
-  max-height: 50px !important;  /* ✅ LÍMITE FIJO */
-  min-height: 50px !important;  /* ✅ MÍNIMO FIJO */
-}
+        width: 100%;
+        display: block;
+      }
 
       .barcode-item-block:hover {
         border: 1px dashed var(--mopar-blue);
@@ -225,29 +230,17 @@
       }
 
       /* Cuando hay 1 código de barras */
-.label-body .barcode-item-block:only-child svg {
-  max-height: 25mm !important;
-  height: 25mm;
-}
-.label-body .barcode-item-block:first-child {
-  margin-top: 3mm; /* Espacio desde arriba para evitar el logo */
-}
-  
-.label-body .barcode-item-block:last-child {
-  margin-top: 3mm; /* Espacio desde abajo para evitar el footer */
-}
+      .label-body .barcode-item-block:only-child svg {
+        max-height: 25mm !important;
+        height: 25mm;
+      }
+      .label-body .barcode-item-block:first-child {
+        margin-top: 3mm; /* Espacio desde arriba para evitar el logo */
+      }
 
-/* Cuando hay 2 códigos de barras, los hacemos más chicos */
-.label-body .barcode-item-block:first-child:nth-last-child(2) svg,
-.label-body .barcode-item-block:first-child:nth-last-child(2) ~ .barcode-item-block svg {
-  max-height: 18mm !important;
-  height: 18mm;
-}
-
-/* Reducir el GAP cuando hay 2 códigos */
-.label-body:has(.barcode-item-block:nth-child(2)) {
-  gap: 2mm;
-}
+      .barcode-item-block > div {
+        gap: 0px !important; /* ✅ SIN GAP entre SVG y texto */
+      }
 
       .hover-actions {
         position: absolute;
@@ -294,13 +287,23 @@
         color: #004a99;
         line-height: 1.1;
         margin-bottom: 1mm;
-        
+      }
+
+      .label-footer div:last-child {
+        font-size: 5pt;
       }
 
       .footer-code {
         font-weight: bold;
         font-size: 4.5pt;
-        margin-bottom: 1px;
+        white-space: nowrap; /* No se rompe */
+      }
+      .footer-top-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5mm;
+        width: 100%;
       }
       .tm-symbol {
         font-size: 0.6em;
@@ -308,51 +311,127 @@
         margin-left: 1px;
       }
 
-     .mopar-logo-div {
-            position: absolute;
-            left: 3mm;    
-            top: 2mm;     
-            width: 14mm;  
-            height: 14mm; 
-            background: white; 
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-        }
+      .mopar-logo-div {
+        position: absolute;
+        left: 3mm;
+        top: 0.8mm;
+        width: 12mm;
+        height: 12mm;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 5;
+      }
 
-        /* LA IMAGEN ADENTRO DEL DIV */
-        .logo-img-file {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; 
-        }
+      /* LA IMAGEN ADENTRO DEL DIV */
+      .logo-img-file {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
 
-        .text-item-block {
-  position: relative;
-  width: 100%;
-  text-align: center;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-  padding: 0;
-}
+      .text-item-block {
+        position: relative;
+        text-align: center;
+        transition: all 0.2s;
+        padding: 0;
+      }
 
-.text-content {
-  font-size: 9pt;
-  font-weight: bold;
-  color: #333;
-  line-height: 1.2;
-}
+      .text-content {
+        font-size: 9pt;
+        font-weight: bold;
+        color: #333;
+        line-height: 1.2;
+      }
 
-.text-item-block:hover {
-  border: 1px dashed var(--mopar-blue);
-  background-color: rgba(0, 74, 153, 0.05);
-}
+      .text-item-block:hover {
+        border: 1px dashed var(--mopar-blue);
+        background-color: rgba(0, 74, 153, 0.05);
+      }
 
-      
-      /* --- 📱 RESPONSIVE PARA CELULARES --- */
-      /* Si la pantalla mide menos de 768px (Tablets y Celus) */
+      .text-column {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin: 4px 0;
+      }
+
+      /* Arriba: "Made in Brazil" (centrado) */
+      .text-content {
+        font-size: 9pt;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+      }
+
+      /* Abajo: Fila con justify-between */
+      .text-bottom-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        gap:100px
+      }
+
+      /* PKG a la izquierda */
+      .text-pkg {
+        font-size: 8pt;
+        font-weight: bold;
+        color: #333;
+      }
+
+      /* 32 a la derecha */
+      .text-number {
+        font-size: 9pt;
+        font-weight: bold;
+        color: #333;
+      }
+
+      /* .label-body:has(.barcode-item-block:nth-child(3))
+        .barcode-item-block
+        svg {
+        height: 32px !important;
+        max-height: 32px !important;
+        min-height: 32px !important;
+      }
+
+      .label-body:has(.barcode-item-block:nth-child(3)) .barcode-item-block {
+        max-height: 42px !important;
+      } */
+
+      .label-body {
+        gap: 1mm;
+      }
+
+      /* .label-body .barcode-item-block:only-child {
+        max-height: 60px;
+      }
+
+      .label-body .barcode-item-block:only-child svg {
+        height: 40px !important;
+        max-height: 40px !important;
+      } */
+      .barcode-text-label {
+        font-size: 11pt !important;
+        font-weight: bold;
+        color: #000;
+        text-align: center;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
+        line-height: 1 !important; /* ✅ ESTO ES CLAVE */
+        margin: 0 !important; /* ✅ SIN MARGEN */
+        padding: 0 !important; /* ✅ SIN PADDING */
+      }
+
+      .footer-line {
+        flex: 1;
+        height: 0.2mm;
+        background: #000;
+        margin-top: 2px;
+      }
+
       @media (max-width: 768px) {
         body {
           flex-direction: column; /* Apila uno arriba del otro */
@@ -376,6 +455,9 @@
           margin-top: 20px;
         }
       }
+      /* .label-body:has(.barcode-item-block:nth-child(3)) .barcode-text-label {
+        margin-top: -4px !important; 
+      } */
 
       /* --- REGLAS DE IMPRESIÓN (EL ARREGLO FINAL) --- */
       @media print {
@@ -389,42 +471,122 @@
           padding: 0 !important;
           height: auto !important;
           margin: 0 !important;
+          transform: none !important;
         }
 
         body {
-          background: white;
-          margin: 0;
+          background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          transform: none !important;
         }
 
+        html {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+        /* ✅ CONTENEDOR EXACTO 60x60mm */
         #label-container {
+          width: 60mm !important;
+          height: 60mm !important;
+          box-sizing: border-box !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          transform: scale(1) !important;
+          transform-origin: top left !important;
           box-shadow: none !important;
-box-sizing: border-box !important; /* Mantiene el borde adentro */
-                width: 68mm !important;  /* Un pelín más chico para que no se corte */
-                height: 68mm !important; /* Un pelín más chico para que no se corte */
-                border: 1px dashed #333 !important;          position: fixed !important;
-          top: 0;
-          left: 0;
-          margin: 0;
-          z-index: 9999;
-          page-break-after: always;
+          border: none !important;
+          overflow: hidden !important;
         }
 
-          .header-text {
-    white-space: nowrap !important; /* No permite saltos de línea */
-    font-size: 8pt !important; /* Un poco más chico para que quepa */
-    overflow: hidden !important; /* Oculta lo que se salga */
-  }
+        /* ✅ HEADER */
+        .mopar-logo-div {
+          position: absolute !important;
+          left: 2mm !important;
+          top: 0.8mm !important;
+          width: 12mm !important;
+          height: 12mm !important;
+        }
 
-  .header-blue-bar {
-    padding-left: 20mm !important;
-    padding-right: 2mm !important; /* Agrega padding derecho */
-    overflow: hidden !important;
-  }
+        .header-blue-bar {
+          padding-left: 16mm !important;
+          padding-right: 1mm !important;
+          padding-top: 2mm !important;
+          padding-bottom: 2mm !important;
+          box-sizing: border-box !important;
+        }
 
+        .header-text {
+          font-size: 7pt !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: clip !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
 
+        .stripe-white,
+        .stripe-blue {
+          height: 1mm !important;
+        }
+
+        /* ✅ BODY */
+        .label-body {
+          padding: 1mm 2mm !important;
+          max-height: none !important;
+          gap: 1mm !important;
+        }
+
+        .label-body .barcode-item-block:first-child {
+          margin-top: 2mm !important;
+        }
+
+        /* ✅ CÓDIGOS DE BARRAS - IGUAL QUE EN PANTALLA */
+        .barcode-item-block {
+          max-height: 50px !important;
+        }
+
+        .barcode-item-block svg {
+          width: 100% !important;
+          height: 40px !important; /* ✅ IGUAL QUE EN PANTALLA */
+          max-height: 40px !important;
+          min-height: 40px !important;
+        }
+
+        /* ✅ CUANDO HAY 2 CÓDIGOS - IGUAL QUE EN PANTALLA */
+        .label-body:has(.barcode-item-block:nth-child(3)) .barcode-item-block {
+          max-height: 42px !important;
+        }
+
+        .label-body:has(.barcode-item-block:nth-child(3))
+          .barcode-item-block
+          svg {
+          height: 32px !important;
+          max-height: 32px !important;
+          min-height: 32px !important;
+        }
+
+        /* ✅ TEXTO - PEGADO AL CÓDIGO */
+        .barcode-text-label {
+          font-size: 11pt !important; /* ✅ IGUAL QUE EN PANTALLA */
+          line-height: 1 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          letter-spacing: 0.3px !important;
+        }
+
+        /* ✅ FORZAR COLORES */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
 
         @page {
-          size: 70mm 70mm;
+          size: 60mm 60mm;
           margin: 0;
         }
       }
@@ -465,20 +627,21 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
     <div class="workspace-area">
       <div id="label-container">
         <div class="mopar-header-wrapper">
-        <div class="mopar-logo-div">
-                    <img src="logo-mopar.png" alt="Logo Mopar" class="logo-img-file">
-                </div>
-        <div class="header-blue-bar">
-          <div class="header-text">
-            Genuine Parts & Accessories™
+          <div class="mopar-logo-div">
+            <img src="logo-mopar.png" alt="Logo Mopar" class="logo-img-file" />
           </div>
-        </div>
-        <div class="stripe-white"></div>
-            <div class="stripe-blue"></div>
+          <div class="header-blue-bar">
+            <div class="header-text">Genuine Parts & Accessories™</div>
+          </div>
+          <div class="stripe-white"></div>
+          <div class="stripe-blue"></div>
         </div>
         <div class="label-body" id="labelBodyContent"></div>
         <div class="label-footer">
-          <div class="footer-code">L=6060</div>
+          <div class="footer-top-row">
+            <div class="footer-code">L=6060</div>
+            <div class="footer-line"></div>
+          </div>
           <div>
             Contents conform to US Federal Motor Vehicle Safety Standards, if
             any are applicable.
@@ -525,6 +688,16 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
 
         const blockDiv = document.createElement("div");
         blockDiv.className = "barcode-item-block";
+
+        // ✅ CONTENEDOR FLEX PARA SVG + TEXTO
+        const barcodeWrapper = document.createElement("div");
+        barcodeWrapper.style.display = "flex";
+        barcodeWrapper.style.flexDirection = "column";
+        barcodeWrapper.style.alignItems = "center";
+        barcodeWrapper.style.gap = "0px";
+        barcodeWrapper.style.lineHeight = "1";
+
+        // ✅ CREAR SVG SIN TEXTO
         const svgElement = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "svg",
@@ -533,36 +706,53 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
         JsBarcode(svgElement, text, {
           format: "CODE128",
           width: 2,
-          height: 40,
-          displayValue: true,
-          fontSize: 16,
-          fontOptions: "bold",
+          height: 32,
+          displayValue: false, // ✅ SIN TEXTO EN EL SVG
           margin: 0,
-          flat:true
+          flat: true,
         });
 
+        // ✅ CREAR TEXTO COMO HTML (TAMAÑO FIJO)
+        const textLabel = document.createElement("div");
+        textLabel.className = "barcode-text-label";
+        textLabel.textContent = text;
+
+        // ✅ AGREGAR SVG Y TEXTO AL WRAPPER
+        barcodeWrapper.appendChild(svgElement);
+        barcodeWrapper.appendChild(textLabel);
+
+        // ✅ BOTONES DE EDITAR/ELIMINAR
         const actionsDiv = document.createElement("div");
         actionsDiv.className = "hover-actions";
         actionsDiv.innerHTML = `
-                <button class="action-btn btn-edit" onclick="editBlock(this, '${text}')" title="Editar"><i class="ri-pencil-line"></i></button>
-                <button class="action-btn btn-delete" onclick="deleteBlock(this)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
-            `;
+    <button class="action-btn btn-edit" onclick="editBlock(this, '${text}')" title="Editar"><i class="ri-pencil-line"></i></button>
+    <button class="action-btn btn-delete" onclick="deleteBlock(this)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+  `;
 
-        blockDiv.appendChild(svgElement);
+        blockDiv.appendChild(barcodeWrapper);
         blockDiv.appendChild(actionsDiv);
         labelBodyContent.appendChild(blockDiv);
 
-        if (labelBodyContent.querySelectorAll('.barcode-item-block').length === 1) {
-    const textDiv = document.createElement("div");
-    textDiv.className = "text-item-block";
-    textDiv.innerHTML = `
-      <div class="text-content">Made in Brazil</div>
+        // ✅ AGREGAR "Made in Brazil" DESPUÉS DEL PRIMER CÓDIGO
+        if (
+          labelBodyContent.querySelectorAll(".barcode-item-block").length === 1
+        ) {
+          const textDiv = document.createElement("div");
+          textDiv.className = "text-item-block";
+          textDiv.innerHTML = `
+      <div class="text-column">
+        <div class="text-content">Made in Brazil</div>
+        <div class="text-bottom-row">
+          <div class="text-pkg">PKG 2025/02/27</div>
+          <div class="text-number">32</div>
+        </div>
+      </div>
       <div class="hover-actions">
         <button class="action-btn btn-delete" onclick="deleteBlock(this)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
       </div>
     `;
-    labelBodyContent.appendChild(textDiv);
-  }
+          labelBodyContent.appendChild(textDiv);
+        }
 
         codeInput.value = "";
         livePreview();
@@ -572,12 +762,14 @@ box-sizing: border-box !important; /* Mantiene el borde adentro */
       function deleteBlock(buttonElement) {
         const blockToDelete = buttonElement.parentElement.parentElement;
         blockToDelete.remove();
-          const remainingBarcodes = labelBodyContent.querySelectorAll('.barcode-item-block').length;
-  const textBlock = labelBodyContent.querySelector('.text-item-block');
-  
-  if (remainingBarcodes === 0 && textBlock) {
-    textBlock.remove(); // Elimina el texto si no hay códigos
-  }
+        const remainingBarcodes = labelBodyContent.querySelectorAll(
+          ".barcode-item-block",
+        ).length;
+        const textBlock = labelBodyContent.querySelector(".text-item-block");
+
+        if (remainingBarcodes === 0 && textBlock) {
+          textBlock.remove(); // Elimina el texto si no hay códigos
+        }
       }
 
       function editBlock(buttonElement, textValue) {
