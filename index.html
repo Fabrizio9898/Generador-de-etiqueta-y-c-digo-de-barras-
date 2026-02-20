@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generador de Etiquetas Mopar 6x6</title>
+    <title>Generador Mopar 60x60 (Fixed)</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
 
@@ -23,10 +23,11 @@
       .live-preview-box { min-height: 80px; background: #f9f9f9; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; padding: 10px; border: 1px dashed #ccc; }
       .live-preview-box svg { width: 100%; height: 50px; } 
 
-      .btn-primary { width: 100%; padding: 12px; background: var(--mopar-blue); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+      .btn-primary { width: 100%; padding: 12px; background: var(--mopar-blue); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; margin-bottom: 10px; }
       .btn-print-floater { margin-top: auto; background: #27ae60; }
-.btn-thermal { background: #d35400; margin-top: auto; }
+      .btn-thermal { background: #d35400; }
       .btn-thermal:hover { background: #e67e22; }
+
       /* --- ÁREA DE TRABAJO --- */
       .workspace-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; background-color: #e9ecef; padding: 20px; }
 
@@ -44,38 +45,47 @@
         position: relative;
       }
 
-      /* 1. HEADER (12% del alto total) */
+      /* 1. HEADER (8mm FIJO) */
       .mopar-header-wrapper { 
-        height: 12%; 
+        height: 8mm; /* MM Exactos */
         width: 100%; 
         position: relative; 
         flex-shrink: 0; 
-        z-index: 2; /* Para que el logo flote sobre el cuerpo si es necesario */
+        z-index: 2; 
       }
       .stripe-white { height: 1.5mm; background: white; width: 100%; }
       .stripe-blue { height: 1.5mm; background: var(--mopar-blue); width: 100%; }
-      .header-blue-bar { background-color: var(--mopar-blue); padding-left: 14mm; height: 100%; display: flex; align-items: center;}
-      .header-text { color: white; font-family: Arial, sans-serif; font-weight: bold; font-size: 8pt; text-transform: capitalize; padding: 2px; white-space: nowrap;}
+      .header-blue-bar { background-color: var(--mopar-blue); padding-left: 14mm; height: 5mm; display: flex; align-items: center;}
+      .header-text { color: white; font-family: 'Helvetica Neue',Arial, sans-serif; font-weight: 600; font-size: 8pt;  letter-spacing: 0.2px; padding: 2px; white-space: nowrap;margin-top: 6px;
+      margin-left: 3px;
+    position: relative;     
+    display: inline-block;  
+    padding-right: 1.5mm;   /* Reservamos el hueco para el TM a la derecha */
+    margin-top: 6px;}
 
-      /* Logo que sobresale */
+      .header-text span{
+font-size: 5pt;
+padding-bottom: 5px;
+font-weight: 400;
+position: absolute;
+top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
+    right: -1px;
+      }
+
+      /* Logo */
       .mopar-logo-div { 
-        position: absolute; 
-        left: 2mm; 
-        top: 0.5mm; 
-        width: 11mm; 
-        height: 11mm; 
-        background: white; 
-        border-radius: 50%; 
+        position: absolute; left: 2mm; top: 0.8mm; 
+        width: 11.9mm; height: 11.3mm; 
+        background: white; border-radius: 50%; 
         display: flex; justify-content: center; align-items: center; 
         z-index: 5; 
       }
       .logo-img-file { width: 100%; height: 100%; object-fit: contain; }
 
-      /* 2. BODY (83% del alto total) */
+      /* 2. BODY (48mm FIJO) */
       .label-body { 
-        height: 83%;
+        height: 48mm; /* MM Exactos (60 - 8 - 4) */
         width: 100%;
-        /* PADDING CLAVE: 5mm arriba para que no choque con el logo que sobresale */
         padding: 5mm 2mm 1mm 2mm; 
         display: flex; 
         flex-direction: column; 
@@ -96,16 +106,22 @@
         align-items: center; 
         justify-content: center;
         overflow: hidden;
+        border: 1px solid transparent; /* Borde invisible por defecto */
+        transition: all 0.2s;
       }
       
       .barcode-item-block svg {
         width: 100%; 
-        height: 40px; /* Altura visual linda */
+        height: 35px; 
         display: block;
         object-fit: fill; 
       }
 
-      .barcode-item-block:hover { border: 1px dashed var(--mopar-blue); background-color: rgba(0, 74, 153, 0.05); }
+      /* ESTILO NUEVO DE SELECCIÓN: Borde azul y fondo sutil, SIN TAPAR */
+      .barcode-item-block:hover { 
+          border: 1px dashed var(--mopar-blue); 
+          background-color: rgba(0, 74, 153, 0.03); 
+      }
 
       .barcode-text-label { 
         font-size: 10pt !important; 
@@ -119,28 +135,54 @@
         overflow: hidden;
         text-overflow: ellipsis; 
       }
-.label-body .barcode-item-block:nth-child(3) {
-        flex-grow: 1; /* Esto le dice: "Comete todo el espacio que sobra" */
+      
+      /* Mantenemos tu lógica de que el 3er elemento baje */
+      .label-body .barcode-item-block:nth-child(3) {
+        flex-grow: 1; 
         display: flex;
         flex-direction: column;
-        justify-content: flex-end; /* Pega el código al fondo (cerca del footer) */
-        padding-bottom: 2mm; /* Un airecito antes del footer */
+        justify-content: center; 
       }
-      /* Texto extra (Made in Brazil) */
-      .text-item-block { position: relative; width: 100%; text-align: center; padding: 0;  }
+      
+      /* Textos extra */
+      .text-item-block { position: relative; width: 100%; text-align: center; padding: 0 4mm; border: 1px solid transparent; }
+      .text-item-block:hover { border: 1px dashed var(--mopar-blue); }
+
       .text-content { font-size: 8pt; font-weight: bold; color: #333; text-align: center; }
-      .text-bottom-row { display: flex; flex-direction: row; justify-content: space-between; width: 100%; }
+      .text-bottom-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; width: 100%; }
       .text-pkg { font-size: 7pt; font-weight: bold; color: #333; }
       .text-number { font-size: 8pt; font-weight: bold; color: #333; }
+      .text-column { display: flex; flex-direction: column; align-items: center; padding:0 4mm }
       
-      .hover-actions { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center; gap: 10px; z-index: 10; }
+      /* BOTONES FLOTANTES (Modificado: Ya no tapan la etiqueta) */
+      .hover-actions { 
+          position: absolute; 
+          top: 0; 
+          right: 0; /* A la derecha */
+          height: 100%; 
+          display: none; 
+          /* Sin fondo blanco invasivo */
+          align-items: center; 
+          gap: 5px; 
+          padding-right: 5px;
+          z-index: 10; 
+      }
+      
+      /* Aparecen al pasar el mouse */
       .barcode-item-block:hover .hover-actions, .text-item-block:hover .hover-actions { display: flex; }
-      .action-btn { width: 30px; height: 30px; border-radius: 50%; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: transform 0.2s; }
+      
+      .action-btn { 
+          width: 25px; height: 25px; /* Más discretos */
+          border-radius: 50%; border: none; color: white; cursor: pointer; 
+          display: flex; align-items: center; justify-content: center; 
+          font-size: 0.9rem; transition: transform 0.2s; 
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombrita para que se vean */
+      }
       .btn-delete { background: #e74c3c; } .btn-edit { background: var(--mopar-blue); }
 
-      /* 3. FOOTER (5% del alto total) */
+      /* 3. FOOTER (4mm FIJO) */
       .label-footer { 
-          height: 5%;
+          height: 4mm; /* MM Exactos */
           width: 100%;
           padding: 0 2mm; 
           font-size: 3.5pt; 
@@ -151,6 +193,7 @@
           flex-direction: column;
           justify-content: flex-end;
           padding-bottom: 1mm;
+          box-sizing: border-box;
       }
       .footer-code { font-weight: bold; font-size: 4pt; white-space: nowrap; }
       .footer-top-row { display: flex; flex-direction: row; align-items: center; gap: 0.5mm; width: 100%; }
@@ -163,65 +206,55 @@
         .workspace-area { padding: 40px 10px; }
       }
 
-      /* --- IMPRESIÓN (La Hora de la Verdad) --- */
+      /* --- IMPRESIÓN --- */
       @media print {
         .ui-panel { display: none !important; }
         .workspace-area { display: block !important; background: white !important; padding: 0 !important; margin: 0 !important; transform: none !important; }
         body, html { background: white !important; margin: 0 !important; padding: 0 !important; }
         
         #label-container {
-          /* CLAVADO EN 60mm */
-          width: 60mm !important; 
-          height: 60mm !important; 
-          box-sizing: border-box !important; position: absolute !important; top: 0 !important; left: 0 !important;
+          width: 60mm !important; height: 60mm !important; 
+          position: absolute !important; top: 0 !important; left: 0 !important;
           margin: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important;
         }
 
-        /* Ajustes finos para que imprima lo que queremos */
         .mopar-logo-div { left: 2mm !important; top: 0.5mm !important; width: 11mm !important; height: 11mm !important; }
         .header-blue-bar { padding-left: 14mm !important; }
-        .header-text { font-size: 8pt !important; }
-         
+        
         .label-body { 
-            /* Mantenemos el colchón de seguridad al imprimir */
             padding: 5mm 2mm 1mm 2mm !important; 
             gap: 1mm !important; 
         }
 
-        .barcode-item-block svg {
-           width: 100% !important;
-           height: 40px !important; 
-        }
-
-        
-        
+        .barcode-item-block svg { width: 100% !important; height: 40px !important; }
         .barcode-text-label { font-size: 10pt !important; line-height: 1 !important; margin: 0 !important; }
+        
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         
-        /* Definimos la hoja física de 60x60 */
         @page { size: 60mm 60mm; margin: 0; }
       }
 
+      /* MODO TÉRMICO (Para rellenar etiquetas pre-impresas) */
       body.thermal-mode .header-blue-bar, 
       body.thermal-mode .stripe-blue,
-      body.thermal-mode .label-footer {
-          background-color: transparent !important; /* Chau fondo azul */
-          color: transparent !important; /* Chau texto del footer (ya viene impreso) */
-      }
+      body.thermal-mode .stripe-white { background-color: transparent !important; border: none !important; }
       
-      body.thermal-mode .mopar-logo-div {
-          opacity: 0 !important; /* Chau logo (ya viene impreso) */
-      }
+      body.thermal-mode .mopar-logo-div { opacity: 0 !important; }
 
       body.thermal-mode .header-text,
       body.thermal-mode .footer-code,
       body.thermal-mode .footer-line {
           color: transparent !important;
           background-color: transparent !important;
-          display: none !important; /* Ocultamos los textos fijos para que no manchen */
+          display: none !important; 
       }
+      body.thermal-mode .label-footer {
+    display: none !important;
+}
+      /* Ocultamos el header visualmente pero mantenemos su espacio */
+      body.thermal-mode .mopar-header-wrapper { visibility: hidden !important; }
       
-      /* Pero mantenemos el BODY (Barcodes) visible y negro */
+      /* El body (datos) se hace visible y se posiciona */
       body.thermal-mode .label-body {
           visibility: visible !important;
       }
@@ -234,10 +267,9 @@
         <label class="input-label">Ingrese Código / Número</label>
         <input type="text" id="codeInput" class="input-field" placeholder="Ej: PART-123456" oninput="livePreview()" autocomplete="off"/>
       </div>
-      <label class="input-label">Previsualización:</label>
-      <div class="live-preview-box" id="previewContainer"><span class="placeholder-text">Escriba para previsualizar...</span></div>
+      <div class="live-preview-box" id="previewContainer"><span class="placeholder-text">...</span></div>
       <button id="addBtn" class="btn-primary" onclick="addToLabel()" disabled><i class="ri-add-circle-line"></i> Agregar a Etiqueta (OK)</button>
-      <button class="btn-primary btn-print-floater" onclick="window.print()"><i class="ri-printer-line"></i> IMPRIMIR ETIQUETA</button>
+      <button class="btn-primary btn-print-floater" onclick="window.print()"><i class="ri-printer-line"></i> IMPRIMIR DISEÑO (Color)</button>
       <button class="btn-primary btn-thermal" onclick="printThermal()">
         <i class="ri-fire-line"></i> Impresión Térmica (Datos)
       </button>
@@ -247,7 +279,7 @@
       <div id="label-container">
         <div class="mopar-header-wrapper">
           <div class="mopar-logo-div"><img src="logo-mopar.png" alt="Logo Mopar" class="logo-img-file" /></div>
-          <div class="header-blue-bar"><div class="header-text">Genuine Parts & Accessories™</div></div>
+          <div class="header-blue-bar"><div class="header-text">Genuine Parts & Accessories<span>™</span></div></div>
           <div class="stripe-white"></div><div class="stripe-blue"></div>
         </div>
         
@@ -267,19 +299,10 @@
       const labelBodyContent = document.getElementById("labelBodyContent");
 
       function printThermal() {
-        // 1. Agregamos la clase que oculta lo azul
         document.body.classList.add("thermal-mode");
-        
-        // 2. Esperamos un cachito a que el navegador procese el cambio visual
-        setTimeout(() => {
-            window.print();
-        }, 200);
+        setTimeout(() => { window.print(); }, 200);
       }
-
-      // 3. Cuando se termina de imprimir (o se cancela), volvemos a la normalidad
-      window.onafterprint = function() {
-          document.body.classList.remove("thermal-mode");
-      };
+      window.onafterprint = function() { document.body.classList.remove("thermal-mode"); };
 
       function livePreview() {
         const text = codeInput.value.toUpperCase();
@@ -287,51 +310,33 @@
         addBtn.disabled = false;
         previewContainer.innerHTML = '<svg id="tempPreviewSvg"></svg>';
         try {
-          JsBarcode("#tempPreviewSvg", text, {
-            format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 10, margin: 0
-          });
-          const svg = document.getElementById("tempPreviewSvg");
-          svg.setAttribute("width", "100%");
-          svg.setAttribute("preserveAspectRatio", "none"); 
+          JsBarcode("#tempPreviewSvg", text, { format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 10, margin: 0 });
+          const svg = document.getElementById("tempPreviewSvg"); svg.setAttribute("width", "100%"); svg.setAttribute("preserveAspectRatio", "none"); 
         } catch (e) { addBtn.disabled = true; }
       }
 
       function addToLabel() {
         const text = codeInput.value.toUpperCase();
         if (text.length === 0) return;
-
-        const blockDiv = document.createElement("div");
-        blockDiv.className = "barcode-item-block";
+        const blockDiv = document.createElement("div"); blockDiv.className = "barcode-item-block";
         const barcodeWrapper = document.createElement("div");
         barcodeWrapper.style.display = "flex"; barcodeWrapper.style.flexDirection = "column"; barcodeWrapper.style.alignItems = "center"; barcodeWrapper.style.gap = "0px"; barcodeWrapper.style.lineHeight = "1"; barcodeWrapper.style.width = "100%";
 
         const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        JsBarcode(svgElement, text, {
-          format: "CODE128", width: 2, height: 35, displayValue: false, margin: 0, flat: true
-        });
+        JsBarcode(svgElement, text, { format: "CODE128", width: 2, height: 35, displayValue: false, margin: 0, flat: true });
+        svgElement.removeAttribute("width"); svgElement.setAttribute("width", "100%"); svgElement.setAttribute("preserveAspectRatio", "none");
 
-        svgElement.removeAttribute("width");
-        svgElement.setAttribute("width", "100%");
-        svgElement.setAttribute("preserveAspectRatio", "none");
-
-        const textLabel = document.createElement("div");
-        textLabel.className = "barcode-text-label";
-        textLabel.textContent = text;
-
-        barcodeWrapper.appendChild(svgElement);
-        barcodeWrapper.appendChild(textLabel);
+        const textLabel = document.createElement("div"); textLabel.className = "barcode-text-label"; textLabel.textContent = text;
+        barcodeWrapper.appendChild(svgElement); barcodeWrapper.appendChild(textLabel);
         
-        const actionsDiv = document.createElement("div");
-        actionsDiv.className = "hover-actions";
+        const actionsDiv = document.createElement("div"); actionsDiv.className = "hover-actions";
         actionsDiv.innerHTML = `<button class="action-btn btn-edit" onclick="editBlock(this, '${text}')"><i class="ri-pencil-line"></i></button><button class="action-btn btn-delete" onclick="deleteBlock(this)"><i class="ri-delete-bin-line"></i></button>`;
 
-        blockDiv.appendChild(barcodeWrapper);
-        blockDiv.appendChild(actionsDiv);
+        blockDiv.appendChild(barcodeWrapper); blockDiv.appendChild(actionsDiv);
         labelBodyContent.appendChild(blockDiv);
 
         if (labelBodyContent.querySelectorAll(".barcode-item-block").length === 1) {
-          const textDiv = document.createElement("div");
-          textDiv.className = "text-item-block";
+          const textDiv = document.createElement("div"); textDiv.className = "text-item-block";
           textDiv.innerHTML = `<div class="text-column"><div class="text-content">Made in Brazil</div><div class="text-bottom-row"><div class="text-pkg">PKG 2025/02/27</div><div class="text-number">32</div></div></div><div class="hover-actions"><button class="action-btn btn-delete" onclick="deleteBlock(this)"><i class="ri-delete-bin-line"></i></button></div>`;
           labelBodyContent.appendChild(textDiv);
         }
