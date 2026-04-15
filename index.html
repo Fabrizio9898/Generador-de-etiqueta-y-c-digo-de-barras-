@@ -92,7 +92,7 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
       .label-body { 
         height: 48mm; /* MM Exactos (60 - 8 - 4) */
         width: 100%;
-        padding: 5mm 2mm 1mm 2mm; 
+        padding: 5mm 8mm 1mm 8mm; 
         display: flex; 
         flex-direction: column; 
         align-items: center; 
@@ -137,9 +137,14 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
         white-space: nowrap; 
         line-height: 1; 
         margin-top: 1px;
+        margin-bottom: 0.6px;
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis; 
+        /* CAMBIO ACA */
+        letter-spacing: 0.6px;
+  transform: scale(0.6, 1); 
+  transform-origin: top center;
       }
       
       /* Mantenemos tu lógica de que el 3er elemento baje */
@@ -154,7 +159,7 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
       .text-item-block { position: relative; width: 100%; text-align: center; padding: 0 ; }
       .text-item-block:hover { border: 1px dashed var(--mopar-blue); }
 
-      .text-content { font-size: 8pt; font-weight: bold; color: #333; text-align: center; }
+      .text-content { font-size: 7pt; font-weight: bold; color: #333; text-align: center; letter-spacing: 1px; }
       .text-bottom-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; width: 100%; }
       .text-pkg { font-size: 7pt; font-weight: bold; color: #333; }
       .text-number { font-size: 8pt; font-weight: bold; color: #333; }
@@ -273,6 +278,10 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
         <label class="input-label">Ingrese Código / Número</label>
         <input type="text" id="codeInput" class="input-field" placeholder="Ej: PART-123456" oninput="livePreview()" autocomplete="off"/>
       </div>
+      <div class="input-group">
+  <label class="input-label">Origen</label>
+  <input type="text" id="originInput" class="input-field" value="Made In Brazil" oninput="updateOriginText()" autocomplete="off"/>
+</div>
       <div class="live-preview-box" id="previewContainer"><span class="placeholder-text">...</span></div>
       <button id="addBtn" class="btn-primary" onclick="addToLabel()" disabled><i class="ri-add-circle-line"></i> Agregar a Etiqueta (OK)</button>
       <button class="btn-primary btn-print-floater" onclick="window.print()"><i class="ri-printer-line"></i> IMPRIMIR DISEÑO (Color)</button>
@@ -306,7 +315,14 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
       const previewContainer = document.getElementById("previewContainer");
       const addBtn = document.getElementById("addBtn");
       const labelBodyContent = document.getElementById("labelBodyContent");
+const originInput = document.getElementById("originInput");
 
+function updateOriginText() {
+  const textContentDiv = document.querySelector(".text-content");
+  if (textContentDiv) {
+    textContentDiv.textContent = originInput.value;
+  }
+}
       function printThermal() {
         document.body.classList.add("thermal-mode");
         setTimeout(() => { window.print(); }, 200);
@@ -332,7 +348,8 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
         barcodeWrapper.style.display = "flex"; barcodeWrapper.style.flexDirection = "column"; barcodeWrapper.style.alignItems = "center"; barcodeWrapper.style.gap = "0px"; barcodeWrapper.style.lineHeight = "1"; barcodeWrapper.style.width = "100%";
 
         const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        JsBarcode(svgElement, text, { format: "CODE128", width: 2, height: 35, displayValue: false, margin: 0, flat: true });
+        JsBarcode(svgElement, text, { format: "CODE128", width: 2, height: 35, displayValue: false, margin: 0, flat: true,font: "monospace",
+  textMargin: 4, });
         svgElement.removeAttribute("width"); svgElement.setAttribute("width", "100%"); svgElement.setAttribute("preserveAspectRatio", "none");
 
         const textLabel = document.createElement("div"); textLabel.className = "barcode-text-label"; textLabel.textContent = text;
@@ -346,7 +363,7 @@ top: 2px;             /* Lo subimos un poquito para que quede "arriba" */
 
         if (labelBodyContent.querySelectorAll(".barcode-item-block").length === 1) {
           const textDiv = document.createElement("div"); textDiv.className = "text-item-block";
-          textDiv.innerHTML = `<div class="text-column"><div class="text-content">Made in Brazil</div><div class="text-bottom-row"><div class="text-pkg">PKG 2025/02/27</div><div class="text-number">32</div></div></div><div class="hover-actions"><button class="action-btn btn-delete" onclick="deleteBlock(this)"><i class="ri-delete-bin-line"></i></button></div>`;
+          textDiv.innerHTML = `<div class="text-column"><div class="text-content">${originInput.value}</div><div class="text-bottom-row"><div class="text-pkg">PKG 2025/02/27</div><div class="text-number">32</div></div></div><div class="hover-actions"><button class="action-btn btn-delete" onclick="deleteBlock(this)"><i class="ri-delete-bin-line"></i></button></div>`;
           labelBodyContent.appendChild(textDiv);
         }
         codeInput.value = ""; livePreview(); codeInput.focus();
